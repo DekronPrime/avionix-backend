@@ -8,6 +8,6 @@ export const ormConfig = (): TypeOrmModuleOptions => ({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   autoLoadEntities: true,
-  synchronize: false,
+  synchronize: true,
   logging: true,
 });
