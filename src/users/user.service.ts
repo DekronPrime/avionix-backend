@@ -12,7 +12,8 @@ import { UserStatus } from 'src/common/enums/userStatus';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { Country } from 'src/countries/country.entity';
 import { plainToInstance } from 'class-transformer';
-import { UserResponseDto } from './dto/userResponse.dto';
+import { UserResponseDto } from '../common/dto/userResponse.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -24,8 +25,10 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
+    const hash = await bcrypt.hash(createUserDto.password, 10);
     const user = this.userRepository.create({
       ...createUserDto,
+      password: hash,
       role: UserRole.PASSENGER,
       status: UserStatus.INCOMPLETE_PROFILE,
     });
@@ -52,6 +55,20 @@ export class UserService {
 
     if (!user) throw new NotFoundException(`User with id=${id} not found`);
     return this.toResponseDto(user);
+  }
+
+  async findByEmail(email: string) {
+    return this.userRepository.findOne({ where: { email } });
+  }
+
+  async findByUsername(username: string) {
+    return this.userRepository.findOne({ where: { username } });
+  }
+
+  async findByUsernameOrEmail(username: string, email: string) {
+    return this.userRepository.findOne({
+      where: [{ email }, { username }],
+    });
   }
 
   async update(
@@ -104,6 +121,13 @@ export class UserService {
 
     const savedUser = await this.userRepository.save(user);
     return this.toResponseDto(savedUser);
+  }
+
+  async findUserForAuth(login: string) {
+    return this.userRepository.findOne({
+      where: [{ username: login }, { email: login }],
+      select: ['id', 'username', 'email', 'password', 'role'],
+    });
   }
 
   private async findCountryById(id: number): Promise<Country> {
