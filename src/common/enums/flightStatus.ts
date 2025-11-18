@@ -1,0 +1,9 @@
+export enum FlightStatus {
+  SCHEDULED = 'SCHEDULED',
+  BOARDING = 'BOARDING',
+  DELAYED = 'DELAYED',
+  IN_AIR = 'IN_AIR',
+  LANDED = 'LANDED',
+  CANCELLED = 'CANCELLED',
+  COMPLETED = 'COMPLETED',
+}
