@@ -7,32 +7,23 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Query,
+  UseGuards,
 } from '@nestjs/common';
-import { UserService } from './user.service';
+import { OwnerGuard } from 'src/auth/guards/owner.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { UserRole } from 'src/common/enums/userRole';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { User } from './user.entity';
+import { UserService } from './user.service';
+import { AdminOrOwnerGuard } from 'src/auth/guards/adminOrOwner.guard';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.userService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.userService.findOne(id);
-  }
-
+  @Public()
   @Get('check/:field/:value')
   async checkField(
     @Param('field') field: keyof User,
@@ -42,11 +33,31 @@ export class UserController {
     return { field, value, isTaken };
   }
 
+  @Roles(UserRole.ADMIN)
+  @Post()
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
+  }
+
+  @Roles(UserRole.ADMIN)
+  @Get()
+  findAll() {
+    return this.userService.findAll();
+  }
+
+  @UseGuards(AdminOrOwnerGuard)
+  @Get(':id')
+  findOne(@Param('id') id: number) {
+    return this.userService.findOne(id);
+  }
+
+  @UseGuards(OwnerGuard)
   @Patch(':id')
   update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
   }
 
+  @UseGuards(OwnerGuard)
   @Delete(':id')
   async delete(@Param('id', ParseIntPipe) id: number) {
     return this.userService.delete(id);

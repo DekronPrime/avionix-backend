@@ -14,6 +14,7 @@ import { Country } from 'src/countries/country.entity';
 import { plainToInstance } from 'class-transformer';
 import { UserResponseDto } from '../common/dto/userResponse.dto';
 import * as bcrypt from 'bcrypt';
+import { MapperService } from 'src/common/mappers/mapper.service';
 
 @Injectable()
 export class UserService {
@@ -22,6 +23,7 @@ export class UserService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Country)
     private readonly countryRepository: Repository<Country>,
+    private readonly mapper: MapperService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
@@ -34,7 +36,7 @@ export class UserService {
     });
 
     const savedUser = await this.userRepository.save(user);
-    return this.toResponseDto(savedUser);
+    return this.mapper.toDto(UserResponseDto, savedUser);
   }
 
   async findAll(): Promise<UserResponseDto[]> {
@@ -43,7 +45,7 @@ export class UserService {
       withDeleted: true,
     });
 
-    return users.map((user) => this.toResponseDto(user));
+    return this.mapper.toDtos(UserResponseDto, users);
   }
 
   async findOne(id: number): Promise<UserResponseDto> {
@@ -54,7 +56,7 @@ export class UserService {
     });
 
     if (!user) throw new NotFoundException(`User with id=${id} not found`);
-    return this.toResponseDto(user);
+    return this.mapper.toDto(UserResponseDto, user);
   }
 
   async findByEmail(email: string) {
@@ -100,7 +102,7 @@ export class UserService {
     }
 
     const updatedUser = await this.userRepository.save(existingUser);
-    return this.toResponseDto(updatedUser);
+    return this.mapper.toDto(UserResponseDto, updatedUser);
   }
 
   async delete(id: number): Promise<UserResponseDto> {
@@ -120,13 +122,13 @@ export class UserService {
     user.deletedAt = new Date();
 
     const savedUser = await this.userRepository.save(user);
-    return this.toResponseDto(savedUser);
+    return this.mapper.toDto(UserResponseDto, savedUser);
   }
 
   async findUserForAuth(login: string) {
     return this.userRepository.findOne({
       where: [{ username: login }, { email: login }],
-      select: ['id', 'username', 'email', 'password', 'role'],
+      select: ['id', 'username', 'email', 'password', 'role', 'status'],
     });
   }
 
@@ -136,12 +138,6 @@ export class UserService {
       throw new NotFoundException(`Country with id=${id} not found`);
     }
     return country;
-  }
-
-  private toResponseDto(user: User): UserResponseDto {
-    return plainToInstance(UserResponseDto, user, {
-      excludeExtraneousValues: true,
-    });
   }
 
   async isFieldTaken(field: keyof User, value: string): Promise<boolean> {
