@@ -3,26 +3,24 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from './dto/createUser.dto';
+import * as bcrypt from 'bcrypt';
 import { UserRole } from 'src/common/enums/userRole';
 import { UserStatus } from 'src/common/enums/userStatus';
-import { UpdateUserDto } from './dto/updateUser.dto';
-import { Country } from 'src/countries/country.entity';
-import { plainToInstance } from 'class-transformer';
-import { UserResponseDto } from '../common/dto/userResponse.dto';
-import * as bcrypt from 'bcrypt';
 import { MapperService } from 'src/common/mappers/mapper.service';
+import { CountryService } from 'src/countries/country.service';
+import { Repository } from 'typeorm';
+import { UserResponseDto } from '../common/dto/userResponse.dto';
+import { CreateUserDto } from './dto/createUser.dto';
+import { UpdateUserDto } from './dto/updateUser.dto';
+import { User } from './user.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(Country)
-    private readonly countryRepository: Repository<Country>,
+    private readonly countryService: CountryService,
     private readonly mapper: MapperService,
   ) {}
 
@@ -86,7 +84,7 @@ export class UserService {
     if (!existingUser)
       throw new NotFoundException(`User with id=${id} not found`);
     if (updateUserDto.nationalityId) {
-      existingUser.nationality = await this.findCountryById(
+      existingUser.nationality = await this.countryService.findById(
         updateUserDto.nationalityId,
       );
     }
@@ -130,14 +128,6 @@ export class UserService {
       where: [{ username: login }, { email: login }],
       select: ['id', 'username', 'email', 'password', 'role', 'status'],
     });
-  }
-
-  private async findCountryById(id: number): Promise<Country> {
-    const country = await this.countryRepository.findOne({ where: { id } });
-    if (!country) {
-      throw new NotFoundException(`Country with id=${id} not found`);
-    }
-    return country;
   }
 
   async isFieldTaken(field: keyof User, value: string): Promise<boolean> {

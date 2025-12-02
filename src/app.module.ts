@@ -8,6 +8,8 @@ import { JwtGlobalGuard } from './common/guards/jwtGlobal.guard';
 import { AuthModule } from './auth/auth.module';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { CommonModule } from './common/common.module';
+import { AirportModule } from './airports/airport.module';
+import { CountryModule } from './countries/country.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { CommonModule } from './common/common.module';
     UserModule,
     AuthModule,
     CommonModule,
+    AirportModule,
+    CountryModule,
   ],
   providers: [
     {

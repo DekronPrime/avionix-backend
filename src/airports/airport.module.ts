@@ -1,20 +1,20 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './user.entity';
-import { UserController } from './user.controller';
-import { UserService } from './user.service';
+import { Airport } from './airport.entity';
 import { Country } from 'src/countries/country.entity';
 import { CommonModule } from 'src/common/common.module';
+import { AirportController } from './airport.controller';
+import { AirportService } from './airport.service';
 import { CountryModule } from 'src/countries/country.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Country]),
+    TypeOrmModule.forFeature([Airport, Country]),
     CountryModule,
     CommonModule,
   ],
-  controllers: [UserController],
-  providers: [UserService],
-  exports: [UserService],
+  controllers: [AirportController],
+  providers: [AirportService],
+  exports: [AirportService],
 })
-export class UserModule {}
+export class AirportModule {}
