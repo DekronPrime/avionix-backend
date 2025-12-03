@@ -45,15 +45,20 @@ export class AirportService {
     return this.mapper.toDto(AirportResponseDto, airport);
   }
 
-  async update(id: number, dto: UpdateAirportDto): Promise<AirportResponseDto> {
+  async update(
+    id: number,
+    updateAirportDto: UpdateAirportDto,
+  ): Promise<AirportResponseDto> {
     const airport = await this.findAirportById(id);
 
-    if (dto.countryId !== undefined) {
-      airport.country = await this.countryService.findById(dto.countryId);
+    if (updateAirportDto.countryId !== undefined) {
+      airport.country = await this.countryService.findById(
+        updateAirportDto.countryId,
+      );
     }
 
     const sanitizedDto = Object.fromEntries(
-      Object.entries(dto).filter(([_, v]) => v !== undefined),
+      Object.entries(updateAirportDto).filter(([_, v]) => v !== undefined),
     );
     Object.assign(airport, sanitizedDto);
 

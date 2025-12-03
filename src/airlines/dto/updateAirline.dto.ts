@@ -1,6 +1,6 @@
 import { IsNumber, IsOptional, IsString, Length } from 'class-validator';
 
-export class UpdateAirportDto {
+export class UpdateAirlineDto {
   @IsOptional()
   @IsString()
   @Length(3, 100)
@@ -8,12 +8,7 @@ export class UpdateAirportDto {
 
   @IsOptional()
   @IsString()
-  @Length(3, 100)
-  city: string;
-
-  @IsOptional()
-  @IsString()
-  @Length(3)
+  @Length(2)
   iataCode: string;
 
   @IsOptional()

@@ -10,6 +10,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
 import { CommonModule } from './common/common.module';
 import { AirportModule } from './airports/airport.module';
 import { CountryModule } from './countries/country.module';
+import { AirlineModule } from './airlines/airline.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { CountryModule } from './countries/country.module';
     AuthModule,
     CommonModule,
     AirportModule,
+    AirlineModule,
     CountryModule,
   ],
   providers: [
