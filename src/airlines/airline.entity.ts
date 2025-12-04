@@ -1,3 +1,4 @@
+import { Aircraft } from 'src/aircraft/aircraft.entity';
 import { AirlineStatus } from 'src/common/enums/airlinesStatus';
 import { Country } from 'src/countries/country.entity';
 import {
@@ -6,6 +7,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -38,4 +40,7 @@ export class Airline {
   @ManyToOne(() => Country, (country) => country.airlines)
   @JoinColumn({ name: 'country_id' })
   country: Country;
+
+  @OneToMany(() => Aircraft, (aircraft) => aircraft.airline)
+  aircraft: Aircraft[];
 }

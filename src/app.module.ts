@@ -11,6 +11,7 @@ import { CommonModule } from './common/common.module';
 import { AirportModule } from './airports/airport.module';
 import { CountryModule } from './countries/country.module';
 import { AirlineModule } from './airlines/airline.module';
+import { AircraftModule } from './aircraft/aircraft.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AirlineModule } from './airlines/airline.module';
     CommonModule,
     AirportModule,
     AirlineModule,
+    AircraftModule,
     CountryModule,
   ],
   providers: [

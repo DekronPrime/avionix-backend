@@ -85,7 +85,7 @@ export class AirlineService {
     return this.mapper.toDto(AirlineResponseDto, deletedAirline);
   }
 
-  private async findAirlineById(id: number): Promise<Airline> {
+  async findAirlineById(id: number): Promise<Airline> {
     const airline = await this.airlineRepository.findOne({
       where: { id },
       relations: ['country'],
