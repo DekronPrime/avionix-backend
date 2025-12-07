@@ -1,0 +1,4 @@
+export const BOARDING_MINUTES = 40;
+export const TURNAROUND_MINUTES = 45;
+export const AUTO_DELAY_MINUTES = 15;
+export const DEFAULT_AVAILABLE_AIRCRAFT_HOURS = 1;

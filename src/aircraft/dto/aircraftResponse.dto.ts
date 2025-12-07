@@ -1,5 +1,5 @@
 import { Expose, Type } from 'class-transformer';
-import { AirlineResponseDto } from 'src/airlines/dto/arilineResponse.dto';
+import { AirlineResponseDto } from 'src/airlines/dto/airlineResponse.dto';
 import { AircraftStatus } from 'src/common/enums/aircraftStatus';
 
 export class AircraftResponseDto {

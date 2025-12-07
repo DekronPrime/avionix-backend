@@ -1,6 +1,7 @@
 import { Aircraft } from 'src/aircraft/aircraft.entity';
 import { AirlineStatus } from 'src/common/enums/airlinesStatus';
 import { Country } from 'src/countries/country.entity';
+import { Flight } from 'src/flights/flight.entity';
 import {
   Column,
   CreateDateColumn,
@@ -43,4 +44,7 @@ export class Airline {
 
   @OneToMany(() => Aircraft, (aircraft) => aircraft.airline)
   aircraft: Aircraft[];
+
+  @OneToMany(() => Flight, (flight) => flight.airline)
+  flights: Flight[];
 }

@@ -1,11 +1,13 @@
 import { AirportStatus } from 'src/common/enums/ariportStatus';
 import { Country } from 'src/countries/country.entity';
+import { Flight } from 'src/flights/flight.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -41,4 +43,10 @@ export class Airport {
   @ManyToOne(() => Country, (country) => country.airports)
   @JoinColumn({ name: 'country_id' })
   country: Country;
+
+  @OneToMany(() => Flight, (flight) => flight.departureAirport)
+  departureFlights: Flight[];
+
+  @OneToMany(() => Flight, (flight) => flight.arrivalAirport)
+  arrivalFlights: Flight[];
 }

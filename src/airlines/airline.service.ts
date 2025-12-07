@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { CountryService } from 'src/countries/country.service';
 import { MapperService } from 'src/common/mappers/mapper.service';
 import { CreateAirlineDto } from './dto/createAirline.dto';
-import { AirlineResponseDto } from './dto/arilineResponse.dto';
+import { AirlineResponseDto } from './dto/airlineResponse.dto';
 import { AirlineStatus } from 'src/common/enums/airlinesStatus';
 import { UpdateAirlineDto } from './dto/updateAirline.dto';
 
