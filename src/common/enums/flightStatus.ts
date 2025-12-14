@@ -1,4 +1,5 @@
 export enum FlightStatus {
+  AWAITING_CREW = 'AWAITING_CREW',
   SCHEDULED = 'SCHEDULED',
   BOARDING = 'BOARDING',
   DELAYED = 'DELAYED',

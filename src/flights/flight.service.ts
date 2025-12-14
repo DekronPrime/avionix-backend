@@ -88,6 +88,8 @@ export class FlightService {
     if (baseStatus === FlightStatus.CANCELLED) return FlightStatus.CANCELLED;
     else if (baseStatus === FlightStatus.COMPLETED)
       return FlightStatus.COMPLETED;
+    else if (baseStatus === FlightStatus.AWAITING_CREW)
+      return FlightStatus.AWAITING_CREW;
 
     const current = this.normalizeToUtc(now);
 
@@ -205,8 +207,6 @@ export class FlightService {
   async findOne(id: number): Promise<FlightResponseDto> {
     const flight = await this.findFlightById(id);
     this.applyDynamicStatus(flight);
-    console.log(flight);
-
     return this.mapper.toDto(FlightResponseDto, flight);
   }
 
@@ -283,12 +283,13 @@ export class FlightService {
   ): Promise<FlightResponseDto> {
     const flight = await this.findFlightById(id);
     if (
+      status !== FlightStatus.AWAITING_CREW &&
       status !== FlightStatus.SCHEDULED &&
       status !== FlightStatus.CANCELLED &&
       status !== FlightStatus.COMPLETED
     )
       throw new BadRequestException(
-        'status must be one of the following values: SCHEDULED, CANCELLED, COMPLETED',
+        'status must be one of the following values: AWAITING_CREW, SCHEDULED, CANCELLED, COMPLETED',
       );
     flight.status = status;
 

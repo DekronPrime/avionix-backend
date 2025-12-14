@@ -1,4 +1,4 @@
-import { IsDate, IsISO8601, IsNumber } from 'class-validator';
+import { IsISO8601, IsNumber } from 'class-validator';
 
 export class UpdateFlightDto {
   @IsISO8601()

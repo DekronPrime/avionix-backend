@@ -2,12 +2,14 @@ import { Aircraft } from 'src/aircraft/aircraft.entity';
 import { Airline } from 'src/airlines/airline.entity';
 import { Airport } from 'src/airports/airport.entity';
 import { FlightStatus } from 'src/common/enums/flightStatus';
+import { CrewAssignment } from 'src/crew-assignments/crew-assignments.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -61,4 +63,7 @@ export class Flight {
   @ManyToOne(() => Airport, (airport) => airport.arrivalFlights)
   @JoinColumn({ name: 'arrival_airport_id' })
   arrivalAirport: Airport;
+
+  @OneToMany(() => CrewAssignment, (crewAssignment) => crewAssignment.flight)
+  crewAssignments: CrewAssignment[];
 }

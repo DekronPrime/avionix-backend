@@ -18,6 +18,8 @@ import { User } from './user.entity';
 import { UserService } from './user.service';
 import { AdminOrOwnerGuard } from 'src/auth/guards/adminOrOwner.guard';
 import { Public } from 'src/common/decorators/public.decorator';
+import { UpdateUserPositionDto } from './dto/updateUserPosition.dto';
+import { UpdateUserStatusDto } from './dto/updateUserStatus.dto';
 
 @Controller('users')
 export class UserController {
@@ -55,6 +57,24 @@ export class UserController {
   @Patch(':id')
   update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
+  }
+
+  @Roles(UserRole.ADMIN)
+  @Patch(':id/position')
+  updateStatus(
+    @Param('id') id: number,
+    @Body() updateUserPositionDto: UpdateUserPositionDto,
+  ) {
+    return this.userService.updatePosition(id, updateUserPositionDto.position);
+  }
+
+  @Roles(UserRole.ADMIN)
+  @Patch(':id/status')
+  suspend(
+    @Param('id') id: number,
+    @Body() updateUserStatusDto: UpdateUserStatusDto,
+  ) {
+    return this.userService.updateStatus(id, updateUserStatusDto.status);
   }
 
   @UseGuards(OwnerGuard)

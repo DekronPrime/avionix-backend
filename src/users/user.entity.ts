@@ -1,6 +1,8 @@
+import { CrewAssignmentPosition } from 'src/common/enums/crewAssignmentPosition';
 import { UserRole } from 'src/common/enums/userRole';
 import { UserStatus } from 'src/common/enums/userStatus';
 import { Country } from 'src/countries/country.entity';
+import { CrewAssignment } from 'src/crew-assignments/crew-assignments.entity';
 import {
   Column,
   CreateDateColumn,
@@ -8,6 +10,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -52,6 +55,9 @@ export class User {
   @Column({ name: 'password', type: 'text', select: false })
   password: string;
 
+  @Column({ type: 'enum', enum: CrewAssignmentPosition, nullable: true })
+  position?: CrewAssignmentPosition;
+
   @Column({
     name: 'phone',
     type: 'varchar',
@@ -81,4 +87,7 @@ export class User {
   @ManyToOne(() => Country, (country) => country.users, { nullable: true })
   @JoinColumn({ name: 'nationality_id' })
   nationality: Country;
+
+  @OneToMany(() => CrewAssignment, (crewAssignment) => crewAssignment.user)
+  crewAssignments: CrewAssignment[];
 }

@@ -2,6 +2,7 @@ import { Expose, Type } from 'class-transformer';
 import { UserRole } from 'src/common/enums/userRole';
 import { UserStatus } from 'src/common/enums/userStatus';
 import { CountryResponseDto } from 'src/countries/dto/countryResponse.dto';
+import { CrewAssignmentPosition } from '../enums/crewAssignmentPosition';
 
 export class UserResponseDto {
   @Expose() id: number;
@@ -12,6 +13,7 @@ export class UserResponseDto {
   @Expose() passportNumber: string;
   @Expose() role: UserRole;
   @Expose() email: string;
+  @Expose() position: CrewAssignmentPosition;
   @Expose() phone?: string;
   @Expose() createdAt: Date;
   @Expose() updatedAt: Date;

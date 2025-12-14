@@ -14,6 +14,7 @@ import { UserResponseDto } from '../common/dto/userResponse.dto';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { User } from './user.entity';
+import { CrewAssignmentPosition } from 'src/common/enums/crewAssignmentPosition';
 
 @Injectable()
 export class UserService {
@@ -75,16 +76,15 @@ export class UserService {
     id: number,
     updateUserDto: UpdateUserDto,
   ): Promise<UserResponseDto> {
-    const existingUser = await this.userRepository.findOne({
+    const user = await this.userRepository.findOne({
       where: { id },
       relations: ['nationality'],
       withDeleted: true,
     });
 
-    if (!existingUser)
-      throw new NotFoundException(`User with id=${id} not found`);
+    if (!user) throw new NotFoundException(`User with id=${id} not found`);
     if (updateUserDto.nationalityId) {
-      existingUser.nationality = await this.countryService.findById(
+      user.nationality = await this.countryService.findById(
         updateUserDto.nationalityId,
       );
     }
@@ -92,14 +92,60 @@ export class UserService {
     const sanitizedDto = Object.fromEntries(
       Object.entries(updateUserDto).filter(([_, v]) => v !== undefined),
     );
-    Object.assign(existingUser, sanitizedDto);
+    Object.assign(user, sanitizedDto);
 
-    const isComplete = this.isUserProfileComplete(existingUser);
-    if (isComplete && existingUser.status !== UserStatus.ACTIVE) {
-      existingUser.status = UserStatus.ACTIVE;
+    const isComplete = this.isUserProfileComplete(user);
+    if (isComplete && user.status !== UserStatus.ACTIVE) {
+      user.status = UserStatus.ACTIVE;
     }
 
-    const updatedUser = await this.userRepository.save(existingUser);
+    const updatedUser = await this.userRepository.save(user);
+    return this.mapper.toDto(UserResponseDto, updatedUser);
+  }
+
+  async updatePosition(
+    id: number,
+    position: CrewAssignmentPosition,
+  ): Promise<UserResponseDto> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    if (user.role !== UserRole.CREW)
+      throw new BadRequestException(
+        `User with ID ${id} does not belong to airlines crew`,
+      );
+    user.position = position;
+
+    const updatedUser = await this.userRepository.save(user);
+    return this.mapper.toDto(UserResponseDto, updatedUser);
+  }
+
+  async updateStatus(id: number, status: UserStatus): Promise<UserResponseDto> {
+    const user = await this.findUserById(id);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    if (status === UserStatus.DELETED)
+      throw new BadRequestException(
+        `You have no permissions to delete this user`,
+      );
+
+    if (status === UserStatus.INACTIVE || status === UserStatus.SUSPENDED)
+      user.status = status;
+    else {
+      const isComplete = this.isUserProfileComplete(user);
+      if (isComplete) user.status = UserStatus.ACTIVE;
+      else user.status = UserStatus.INCOMPLETE_PROFILE;
+    }
+
+    const updatedUser = await this.userRepository.save(user);
     return this.mapper.toDto(UserResponseDto, updatedUser);
   }
 
@@ -119,8 +165,8 @@ export class UserService {
     user.status = UserStatus.DELETED;
     user.deletedAt = new Date();
 
-    const savedUser = await this.userRepository.save(user);
-    return this.mapper.toDto(UserResponseDto, savedUser);
+    const deletedUser = await this.userRepository.save(user);
+    return this.mapper.toDto(UserResponseDto, deletedUser);
   }
 
   async findUserForAuth(login: string) {
@@ -151,5 +197,16 @@ export class UserService {
     ];
 
     return requiredFields.every((f) => !!(user as any)[f]);
+  }
+
+  async findUserById(id: number): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['nationality'],
+      withDeleted: true,
+    });
+
+    if (!user) throw new NotFoundException(`User with id=${id} not found`);
+    return user;
   }
 }
